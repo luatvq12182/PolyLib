@@ -4,6 +4,23 @@ import TodoList from './components/TodoList.js';
 
 const App = () => {
     const [todos, setTodos] = useState([]);
+    const [count, setCount] = useState(1);
+
+    useEffect(() => {
+        // setTimeout(() => {
+        //     setCount(count + 1);
+        //     setCount(count + 1);
+        //     setCount(count + 1);
+        // }, 3000);
+        // => count sẽ = 2
+
+        setTimeout(() => {
+            setCount((count) => count + 1);
+            setCount((count) => count + 1);
+            setCount((count) => count + 1);
+        }, 2000);
+        // => count sẽ = 4
+    }, []);
 
     useEffect(() => {
         fetch('https://jsonplaceholder.typicode.com/todos')
@@ -29,6 +46,8 @@ const App = () => {
 
     return `
         <div>
+            <h1>Count: ${count}</h1> 
+
             ${TodoForm({
                 onAddTodo,
             })}

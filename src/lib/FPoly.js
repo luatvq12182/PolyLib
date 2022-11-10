@@ -2,6 +2,7 @@ import { debounce } from '../utils.js';
 
 let rootComponent = null;
 let rootElement = null;
+let isFirstRender = true;
 
 const states = [];
 let stateOrder = 0;
@@ -14,6 +15,7 @@ const render = (component, root) => {
 
     rootComponent = component;
     rootElement = root;
+    isFirstRender = false;
 
     effects.forEach((effect) => {
         const cleanFn = effect.callback();
@@ -55,10 +57,20 @@ const rerender = debounce(() => {
 
 export const useState = (initialState) => {
     const currentStateOrder = stateOrder;
-    const state = states[currentStateOrder] ?? initialState;
+    let state;
+
+    if (isFirstRender) {
+        state = states[currentStateOrder] = initialState;
+    } else {
+        state = states[currentStateOrder];
+    }
 
     const updater = (newState) => {
-        states[currentStateOrder] = newState;
+        if (typeof newState === 'function') {
+            states[currentStateOrder] = newState(states[currentStateOrder]);
+        } else {
+            states[currentStateOrder] = newState;
+        }
 
         rerender();
     };
